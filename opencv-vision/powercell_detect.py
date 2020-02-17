@@ -6,10 +6,17 @@ import imutils
 import time
 import constants
 
+from networktables import NetworkTables
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video",
 	help="path to the (optional) video file")
 args = vars(ap.parse_args())
+
+# NetworkTables
+
+NetworkTables.initialize(server=constants.SERVER_IP)
+sd = NetworkTables.getTable("SmartDashboard")
 
 # define the lower and upper boundaries of the yellow powercell in the HSV color
 # scheme, then initialize the list of tracked points
@@ -76,6 +83,7 @@ while True:
 				(0, 0, 255), 2)
 			cv2.circle(frame, center, 5, (0, 0, 255), -1)
 			x_angle = getAngle(center[0])
+			sd.putNumber("visionHorizontalAngle", x_angle)
 			cv2.putText(frame, 'Angle: ' + str(x_angle), (5, 80), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 			cv2.putText(frame, 'Center: ' + str(center), (5, 32), cv2.FONT_HERSHEY_DUPLEX, 1, (0, 0, 0), 2, cv2.LINE_AA)
 	cv2.imshow("Frame", frame)
